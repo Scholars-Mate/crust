@@ -18,15 +18,21 @@ static struct device r_ccu  __device;
 static struct device r_intc __device;
 
 static struct device ccu = {
-	.name = "ccu",
-	.regs = DEV_CCU,
-	.drv  = &sunxi_ccu_driver,
+	.name    = "ccu",
+	.regs    = DEV_CCU,
+	.drv     = &sunxi_ccu_driver,
+	.drvdata = SUNXI_CCU_DRVDATA {
+		[CCU_CLOCK_MSGBOX] = {
+			.gate  = CCU_GATE_MSGBOX,
+			.reset = CCU_RESET_MSGBOX,
+		},
+	},
 };
 
 static struct device msgbox = {
 	.name     = "msgbox",
 	.regs     = DEV_MSGBOX,
-	.clock    = CCU_GATE(CCU_GATE_MSGBOX) | CCU_RESET(CCU_RESET_MSGBOX),
+	.clock    = CCU_CLOCK_MSGBOX,
 	.clockdev = &ccu,
 	.drv      = &sunxi_msgbox_driver,
 	.drvdata  = SUNXI_MSGBOX_DRVDATA { 0 },
@@ -35,9 +41,33 @@ static struct device msgbox = {
 };
 
 static struct device r_ccu = {
-	.name = "r_ccu",
-	.regs = DEV_R_PRCM,
-	.drv  = &sunxi_ccu_driver,
+	.name    = "r_ccu",
+	.regs    = DEV_R_PRCM,
+	.drv     = &sunxi_ccu_driver,
+	.drvdata = SUNXI_CCU_DRVDATA {
+		[R_CCU_CLOCK_R_PIO] = {
+			.gate = R_CCU_GATE_R_PIO,
+		},
+		[R_CCU_CLOCK_R_CIR] = {
+			.gate  = R_CCU_GATE_R_CIR,
+			.reset = R_CCU_RESET_R_CIR,
+		},
+		[R_CCU_CLOCK_R_TIMER] = {
+			.gate  = R_CCU_GATE_R_TIMER,
+			.reset = R_CCU_RESET_R_TIMER,
+		},
+		[R_CCU_CLOCK_R_UART] = {
+			.gate  = R_CCU_GATE_R_UART,
+			.reset = R_CCU_RESET_R_UART,
+		},
+		[R_CCU_CLOCK_R_I2C] = {
+			.gate  = R_CCU_GATE_R_I2C,
+			.reset = R_CCU_RESET_R_I2C,
+		},
+		[R_CCU_CLOCK_R_TWD] = {
+			.gate = R_CCU_GATE_R_TWD,
+		},
+	},
 };
 
 static struct device r_intc = {
