@@ -12,10 +12,7 @@
 #define MAX_WORK_ITEMS 1
 
 /* Queue of work items. */
-static struct {
-	work_function fn;
-	void         *param;
-} work_items[MAX_WORK_ITEMS];
+static struct work_item work_items[MAX_WORK_ITEMS];
 
 void
 process_work(void)
