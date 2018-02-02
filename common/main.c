@@ -7,6 +7,7 @@
 #include <dm.h>
 #include <stdbool.h>
 #include <work.h>
+#include <drivers/timer.h>
 #include <platform/devices.h>
 
 void main(void);
@@ -16,6 +17,7 @@ main(void)
 {
 	console_init(DEV_UART0);
 	dm_init();
+	timer_refresh();
 
 	while (true) {
 		process_work();
