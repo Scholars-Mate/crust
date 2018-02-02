@@ -7,12 +7,16 @@
 #include <exception.h>
 #include <stdint.h>
 #include <drivers/irqchip.h>
+#include <drivers/timer.h>
+#include <drivers/timer/or1k-timer.h>
 
 void
 handle_exception(uint32_t number, struct exception_regs *regs)
 {
 	switch (number) {
 	case TICK_TIMER_EXCEPTION:
+		or1k_timer_clear();
+		timer_tick();
 		break;
 	case EXTERNAL_INTERRUPT:
 		irqchip_irq();
