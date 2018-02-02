@@ -7,15 +7,17 @@
 #include <drivers/clock/sunxi-ccu.h>
 #include <drivers/irqchip/sun4i-intc.h>
 #include <drivers/msgbox/sunxi-msgbox.h>
+#include <drivers/timer/or1k-timer.h>
 #include <platform/ccu.h>
 #include <platform/devices.h>
 #include <platform/irq.h>
 #include <platform/r_ccu.h>
 
-static struct device ccu    __device;
-static struct device msgbox __device;
-static struct device r_ccu  __device;
-static struct device r_intc __device;
+static struct device ccu        __device;
+static struct device msgbox     __device;
+static struct device or1k_timer __device;
+static struct device r_ccu      __device;
+static struct device r_intc     __device;
 
 static struct device ccu = {
 	.name    = "ccu",
@@ -42,6 +44,14 @@ static struct device msgbox = {
 	.drvdata  = SUNXI_MSGBOX_DRVDATA { 0 },
 	.irq      = IRQ_MSGBOX,
 	.irqdev   = &r_intc,
+};
+
+/* The tick timer is a non-optional part of the OR1200 CPU. */
+static struct device or1k_timer = {
+	.name     = "or1k-timer",
+	.clock    = R_CCU_CLOCK_ARISC,
+	.clockdev = &r_ccu,
+	.drv      = &or1k_timer_driver,
 };
 
 static struct device r_ccu = {
