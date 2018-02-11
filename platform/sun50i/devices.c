@@ -51,8 +51,14 @@ static struct device r_cnt64 = {
 
 static struct device r_i2c = {
 	.name = "r_i2c",
-	.drv  = "",
-	.irq  = "",
+	//.bus  = &r_pio,
+	.addr = 0,
+	.regs = DEV_R_I2C,
+	.clock    = CCU_GATE(R_CCU_GATE_R_I2C) | CCU_RESET(R_CCU_RESET_R_I2C),
+	.clockdev = &r_ccu,
+	.drv  = &sun6i_i2c_driver,
+	.irq  = IRQ_R_I2C,
+	.irqdev = &r_intc,
 };
 
 static struct device r_intc = {
