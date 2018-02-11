@@ -6,17 +6,30 @@
 #include <compiler.h>
 #include <dm.h>
 #include <error.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <time.h>
 #include <drivers/timer.h>
 
+#include <debug.h>
+
 static uint32_t tick_interval = SECONDS(1);
 static struct device *timer;
+
+#define MAX_PERIODIC_ITEMS 5
+
+static struct work_item periodic_work_items[MAX_PERIODIC_ITEMS];
 
 int
 timer_cancel_periodic(work_function fn __unused, void *param __unused)
 {
-	return ENOTSUP;
+	/* Walk the list and try to find a matching work item */
+	for (size_t i = 0; i < MAX_PERIODIC_ITEMS; i++) {
+		if (periodic_work_items[i].fn    == fn &&
+		    periodic_work_items[i].param == param)
+			periodic_work_items[i].fn = NULL;
+	}
+	return SUCCESS;
 }
 
 int
@@ -61,13 +74,34 @@ timer_run_delayed(work_function fn __unused, void *param __unused,
 }
 
 int
-timer_run_periodic(work_function fn __unused, void *param __unused)
+timer_run_periodic(work_function fn, void *param)
 {
-	return ENOTSUP;
+	bool queued = false;
+	/* Find the first available index */
+	/* Does not find duplicates */
+	for (size_t i = 0; i < MAX_PERIODIC_ITEMS && !queued; i++) {
+		if (periodic_work_items[i].fn != NULL)
+			continue;
+		periodic_work_items[i].fn = fn;
+		periodic_work_items[i].param = param;
+		queued = true;
+		break;
+	}
+	
+	if (!queued)
+		error("Periodic work queue full");
+	return SUCCESS;
 }
 
 void
 timer_tick(void)
 {
+	/* Walk through periodic work items and add each to work queue */
+	for (int i = 0; i < MAX_PERIODIC_ITEMS; i++) {
+		if (periodic_work_items[i].fn == NULL)
+			continue;
+		queue_work(periodic_work_items[i].fn,
+		           periodic_work_items[i].param);
+	}
 	timer_refresh();
 }
