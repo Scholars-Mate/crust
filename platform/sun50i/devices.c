@@ -5,6 +5,7 @@
 
 #include <dm.h>
 #include <drivers/clock/sunxi-ccu.h>
+#include <drivers/i2c/sun6i_i2c.h>
 #include <drivers/irqchip/sun4i-intc.h>
 #include <drivers/msgbox/sunxi-msgbox.h>
 #include <drivers/wallclock/sun6i-cnt64.h>
