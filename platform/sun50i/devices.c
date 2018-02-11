@@ -13,11 +13,12 @@
 #include <platform/irq.h>
 #include <platform/r_ccu.h>
 
-static struct device ccu     __device;
-static struct device msgbox  __device;
-static struct device r_ccu   __device;
+static struct device ccu    __device;
+static struct device msgbox __device;
+static struct device r_ccu  __device;
 static struct device r_cnt64 __device;
-static struct device r_intc  __device;
+static struct device r_i2c  __device;
+static struct device r_intc __device;
 
 static struct device ccu = {
 	.name = "ccu",
@@ -46,6 +47,12 @@ static struct device r_cnt64 = {
 	.name = "r_cnt64",
 	.regs = DEV_R_CPUCFG,
 	.drv  = &sun6i_cnt64_driver,
+};
+
+static struct device r_i2c = {
+	.name = "r_i2c",
+	.drv  = "",
+	.irq  = "",
 };
 
 static struct device r_intc = {
